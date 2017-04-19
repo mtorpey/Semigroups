@@ -1,0 +1,36 @@
+#############################################################################
+##
+#W  congfpmon.xml
+#Y  Copyright (C) 2017                                      Michael Torpey
+##
+##  Licensing information can be found in the README file of this package.
+##
+#############################################################################
+##
+
+<#GAPDoc Label="IsFpMonoidCongruence">
+  <ManSection>
+    <Filt Name = "IsFpMonoidCongruence" Arg = "obj" Type = "Category"/>
+    <Returns><K>true</K> or <K>false</K>.</Returns>
+    <Description>
+      This category contains any left, right or two-sided congruence over a
+      finitely presented monoid, defined by a set of generating pairs.  It can
+      be treated in the same way as any semigroup congruence object (see
+      <Ref Filt = "IsSemigroupCongruence"/>).
+
+      <Example><![CDATA[
+gap> F := FreeMonoid(2);;
+gap> M := F / [[F.2 ^ 2, F.2],
+>              [F.1 * F.2, F.2 * F.1],
+>              [F.1 ^ 7, F.1 ^ 9]];;
+gap> cong := SemigroupCongruence(M, [[M.1, M.2]]);
+<semigroup congruence over <fp monoid on the generators [ m1, m2 ]> with 
+ 1 generating pairs>
+gap> IsFpMonoidCongruence(cong);
+true
+gap> NrEquivalenceClasses(cong);
+3
+]]></Example>
+    </Description>
+  </ManSection>
+<#/GAPDoc>
