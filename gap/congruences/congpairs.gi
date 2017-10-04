@@ -13,8 +13,6 @@
 ##
 #############################################################################
 
-#TODO: A method for MeetXSemigroupCongruences
-
 #############################################################################
 # Internal attributes
 #############################################################################
@@ -143,6 +141,24 @@ SEMIGROUPS.JoinCongruences := function(constructor, c1, c2)
   # TODO if one or the other does not have the lookup could do TC on
   # which ever is smaller using the pairs of the other.
   return cong;
+end;
+
+SEMIGROUPS.MeetCongruences := function(constructor, c1, c2)
+  S := Range(c1);
+  if S <> Range(c2) then
+    ErrorNoReturn("Semigroups: SEMIGROUPS.MeetCongruences: usage,\n",
+                  "the congruences must be defined over the same semigroup,");
+  fi;
+  lookup1 := EquivalenceRelationCanonicalLookup(c1);
+  lookup2 := EquivalenceRelationCanonicalLookup(c2);
+  
+  meet_lookup := EmptyPlist(Size(S));
+  next := 1;
+  
+  # Hash table using pairs of lookup entries
+  ht := HTCreate([1, 1], rec(forflatplainlists := true));
+
+  return constructor(Range(c1), []);
 end;
 
 #############################################################################
@@ -503,6 +519,14 @@ function(c1, c2)
     return c1;
   fi;
   return SEMIGROUPS.JoinCongruences(RightSemigroupCongruence, c1, c2);
+end);
+
+InstallMethod(MeetSemigroupCongruences,
+"for 2-sided semigroup congruences by generating pairs rep",
+[IsCongruenceByGeneratingPairsRep and IsSemigroupCongruence,
+ IsCongruenceByGeneratingPairsRep and IsSemigroupCongruence],
+function(c1, c2)
+  return SEMIGROUPS.MeetCongruences(SemigroupCongruence, c1, c2);
 end);
 
 #############################################################################
