@@ -443,6 +443,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_ENTRY("congpairs.cc", CONG_PAIRS_LOOKUP_PART, 1, "cong"),
     GVAR_ENTRY("congpairs.cc", CONG_PAIRS_ELM_COSET_ID, 2, "cong, elm"),
     GVAR_ENTRY("congpairs.cc", CONG_PAIRS_NONTRIVIAL_CLASSES, 1, "cong"),
+    GVAR_ENTRY("congpairs.cc", CONG_PAIRS_FORCE, 2, "cong, method"),
 
     GVAR_ENTRY("fropin.cc",
                SCC_UNION_LEFT_RIGHT_CAYLEY_GRAPHS,
