@@ -446,3 +446,20 @@ gap_list_t CONG_PAIRS_NONTRIVIAL_CLASSES(Obj self, gap_cong_t o) {
 
   return gap_lists;
 }
+
+Obj CONG_PAIRS_FORCE(Obj self, gap_cong_t o, Obj method) {
+  initRNams();
+  Congruence* cong = cong_obj_get_cpp(o);
+
+  // method should be a gap int in [1 .. 4]
+  size_t n = INT_INTOBJ(method);
+  
+  switch(n) {
+  case 1: cong->force_tc(); break;
+  case 2: cong->force_tc_prefill(); break;
+  case 3: cong->force_kbfp(); break;
+  case 4: cong->force_p(); break;
+  default: return False;
+  }
+  return True;
+}
