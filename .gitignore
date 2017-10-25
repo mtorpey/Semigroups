@@ -64,6 +64,7 @@ gh-pages
 lcov*
 libtool
 m4
+output.csv
 pkgconfig.h.in~
 src/.deps
 src/.dirstamp
