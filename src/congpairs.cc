@@ -453,8 +453,8 @@ Obj CONG_PAIRS_FORCE(Obj self, gap_cong_t o, Obj method) {
 
   // method should be a gap int in [1 .. 4]
   size_t n = INT_INTOBJ(method);
-  
-  switch(n) {
+
+  switch (n) {
   case 1: cong->force_tc(); break;
   case 2: cong->force_tc_prefill(); break;
   case 3: cong->force_kbfp(); break;
