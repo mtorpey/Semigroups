@@ -2,7 +2,7 @@
 # Read("tst/bench/cong.bench.g"); do_benchmarks(30);
 # less output.csv
 
-filename := "output.csv";
+filename := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/output.csv");
 max_size := 500;
 nrpairs := 1;
 method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
