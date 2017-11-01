@@ -1,0 +1,144 @@
+#!/usr/bin/env python
+# pylint: skip-file
+
+import matplotlib.pyplot as plt
+import time
+import sys
+import numpy as np
+
+#plt.rcParams['font.family'] = 'Times New Roman'
+
+def reject_outliers(data, m=2):
+    mean = np.mean(data[0])
+    std = np.std(data[0])
+    i = 0
+    while i < len(data[0]):
+        if data[0][i] - mean >= 2 * std:
+            del data[0][i]
+            del data[1][i]
+        else:
+            i += 1
+
+
+def make_plot(filename):
+    f = file(filename, 'r');
+    data = [np.array(eval(line.strip())) for line in f.readlines()[1:]] # ignore header
+    # data[i][0] = Size of S
+    # data[i][1] = Number of generating pairs
+    # data[i][2] = Number of congruence classes
+    # data[i][3] = Time taken (tc)
+    # data[i][4] = Time taken (tc_prefill)
+    # data[i][5] = Time taken (kbfp)
+    # data[i][6] = Time taken (p)
+    # data[i][7] = Time taken (default)
+
+    f.close()
+
+#   X = np.arange((100 - (len(data[0]) - 1) * 2) / 100., 1.02, 0.02)
+    X = np.arange(0, 8, 1)
+    print X
+    print data[0]
+    plt.plot(X, data[0], 'gx', label=u'hello')
+    plt.plot(X, data[0], 'rx', label=u'world')
+    plt.plot((0, 1), (1, 1), 'k-')
+    plt.legend(loc='upper right')
+    x1,x2,y1,y2 = plt.axis()
+    plt.axis((x1,x2,0,1.6))
+    plt.xlabel(u'Proportion of elements of \u27E8A\u27E9 initially enumerated.')
+    plt.ylabel(u'Ratio of runtime to runtime of FroidurePin(\u27E8A, X\u27E9).')
+
+    plt.savefig(filename + '.pdf', format='pdf')
+    plt.close()
+
+    print 'See: ' + filename + '.pdf'
+
+    print 'Sample size:\t\t', len(data[2])
+    print 'Number of generators:'
+    print 'max = ', max(data[2]), '\tmin = ', min(data[2]),
+    print '\tmean = ', np.mean(data[2]), '\tstandard dev = ', np.std(data[2])
+
+    print 'Size <A>:'
+    print 'max = ', max(data[3]), '\tmin = ', min(data[3]),
+    print '\tmean = ', np.mean(data[3]), '\tstandard dev = ', np.std(data[3])
+
+    print 'Size <A, X>:'
+    print 'max = ', max(data[4]), '\tmin = ', min(data[4]),
+    print '\tmean = ', np.mean(data[4]), '\tstandard dev = ', np.std(data[4])
+
+#make_plot('out/' + time.strftime('%Y-%m-%d') + '-boolmat-add_generators')
+make_plot('output.csv')
+
+
+# Examples where multithreading does not make sense
+
+#X  = [1, 2, 4, 8, 16, 32]
+## Full transformation monoid 6
+#Y0 = [117, 115, 72, 101, 148, 307]
+#
+## Gossip monoid 5
+#Y1 = [89 ,75 ,65 ,57 ,172 ,161]
+#
+## Upper triangular boolean mats
+#Y2 = [327 ,245 ,142 ,246 ,187 ,367]
+#
+## Unitriangular5
+#Y3 = [9 ,7 ,5 ,16 ,78 ,89]
+#
+## Unitriangular6
+#Y4 = [272 ,190 ,141 ,99 ,123 ,306]
+#
+#print 'Writing small.pdf . . .'
+#plt.plot(X, Y0, 'b', marker='.', label='Full transformation monoid of degree 6')
+#plt.plot(X, Y1, 'g', marker='.', label='5x5 gossip monoid')
+#plt.plot(X, Y2, 'r', marker='.', label='5x5 upper triangular boolean matrices')
+#plt.plot(X, Y3, 'c', marker='.', label='5x5 unitriangular boolean matrices')
+#plt.plot(X, Y4, 'k', marker='.', label='6x6 unitriangular boolean matrices')
+#plt.legend(loc='upper right')
+#plt.xlabel('Number of fragments.')
+#plt.ylabel('Time in ms.')
+#plt.xticks([1, 2, 4, 8, 16, 32])
+#plt.axis([0, 35, 0, 600])
+#plt.savefig('small.pdf', format='pdf')
+#plt.close()
+#
+## Examples where multithreading does make sense
+#X  = [1, 2, 4, 8, 16, 32]
+## T_7
+#Y5 = [37362.0 / 1000 ,33698.0 / 1000 ,24826.0 / 1000 ,18477.0 / 1000 ,
+#        9556.0 / 1000, 5799.0 / 1000]
+##Triangular6
+#Y6 = [18668.0 / 1000 ,10875.0 / 1000, 6722.0 / 1000, 4342.0 / 1000, 3538.0 /
+#        1000,2565.0 / 1000]
+## Unitriangular7
+#Y7 = [15368.0 / 1000 ,11821.0 / 1000 ,9383.0 / 1000 ,5726.0 / 1000 ,3878.0 /
+#        1000 ,2858.0 / 1000]
+## Gossip 6
+#Y8 = [11183.0 / 1000 ,5992.0 / 1000 ,4696.0 / 1000 ,2748.0 / 1000 ,2232.0 /
+#        1000 ,1765.0 / 1000]
+#
+#print 'Writing big.pdf . . .'
+#plt.plot(X, Y5, 'g', marker='.',label='Full transformation monoid of degree 8')
+#plt.plot(X, Y6, 'b', marker='.',label='6x6 upper triangular boolean matrices')
+#plt.plot(X, Y7, 'r', marker='.',label='7x7 unitriangular boolean matrices')
+#plt.plot(X, Y8, 'c', marker='.',label='6x6 gossip monoid')
+#plt.legend(loc='upper right')
+#plt.xlabel('Number of fragments.')
+#plt.ylabel('Time in seconds.')
+#plt.xticks([1, 2, 4, 8, 16, 32])
+#plt.savefig('big.pdf', format='pdf')
+#plt.close()
+#
+## Reflexive 5
+#Y9 = [166617.0 / 1000, 111628.0 / 1000, 63726.0 / 1000, 38468.0 / 1000, 25350.0
+#        / 1000, 20603.0 / 1000]
+#print 'Writing reflex.pdf . . .'
+#plt.plot(X, Y9, 'k', marker='.',label='5x5 reflexive boolean matrix monoid')
+#plt.legend(loc='upper right')
+#plt.xlabel('Number of fragments.')
+#plt.ylabel('Time in seconds.')
+#plt.xticks([1, 2, 4, 8, 16, 32])
+#plt.savefig('reflex.pdf', format='pdf')
+#plt.close()
+
+#print 'SUCCESS!'
+sys.exit(0)
