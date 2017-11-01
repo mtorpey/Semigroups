@@ -3,25 +3,31 @@
 # less output.csv
 
 filename := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/output.csv");
-max_size := 500;
+max_size := 1000;
 nrpairs := 1;
+nrtestpairs := 3;
 method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
 
 random_benchmark := function(filename, max_size, nrpairs)
-  local S, pairs, max_name_len, nrclasses, times, method, cong, i, start_time,
-        fin_time, time_taken, out_list, out_str;
+  local S, pairs, test_pairs, i, max_name_len, results, times, method, cong, 
+        start_time, fin_time, time_taken, out_list, out_str;
   repeat
-    S := RandomSemigroup(IsTransformationSemigroup, 3, 6);
+    S := RandomSemigroup(IsTransformationSemigroup, 2, 6);
   until Size(S) < max_size;
+  Print(RelationsOfFpSemigroup(AsSemigroup(IsFpSemigroup, S)), "\n");
   Elements(S);
   Print("\n");
   Print("Size of S: ", Size(S), "\n");
 
   pairs := List([1 .. nrpairs], i -> [Random(S), Random(S)]);
   Print("Number of pairs: ", Size(pairs), "\n");
+  test_pairs := EmptyPlist(nrtestpairs);
+  for i in [1 .. nrtestpairs] do
+    test_pairs[i] := [Random(S), Random(S)];
+  od;
 
   max_name_len := Maximum(List(method_names, Length));
-  nrclasses := [];
+  results := [];
   times := EmptyPlist(Length(method_names));
   for method in [1 .. 5] do
     cong := SemigroupCongruence(S, pairs);
@@ -31,23 +37,26 @@ random_benchmark := function(filename, max_size, nrpairs)
       Print(".");
     od;
     start_time := IO_gettimeofday();
-    Add(nrclasses, NrEquivalenceClasses(cong));
+    results[method] := EmptyPlist(nrtestpairs);
+    for i in [1 .. nrtestpairs] do
+      Add(results[method], test_pairs[i] in cong);
+    od;
     fin_time := IO_gettimeofday();
     time_taken := 10 ^ 6 * (fin_time.tv_sec - start_time.tv_sec) +
                   (fin_time.tv_usec - start_time.tv_usec);
-    #  time_taken := Int(Round(Float(time_taken / 1000)));
-    Print(" ", time_taken, " us\n");
+    time_taken := Float(time_taken) / 1000;
+    Print(" ", time_taken, " ms\n");
     times[method] := time_taken;
   od;
 
-  Print("Number of classes: ");
-  if Size(Set(nrclasses)) = 1 then
-    Print(nrclasses[1], "\n");
+  Print("Results: ");
+  if Size(Set(results)) = 1 then
+    Print(results[1], "\n");
   else
-    ErrorNoReturn("number of classes differs: ", nrclasses);
+    ErrorNoReturn("results differ: ", results);
   fi;
 
-  out_list := Concatenation([Size(S), nrpairs, nrclasses[1]], times);
+  out_list := Concatenation([Size(S), nrpairs, NrEquivalenceClasses(cong)], times);
   out_str := Concatenation(List(out_list, n -> Concatenation(String(n), ",")));
   Remove(out_str);
   Append(out_str, "\n");
@@ -57,6 +66,7 @@ end;
 random_benchmark_repeat := function(nr_iterations, filename, max_size, nrpairs)
   local i;
   for i in [1 .. nr_iterations] do
+    Print("\nExample ", i, " of ", nr_iterations, ":\n");
     random_benchmark(filename, max_size, nrpairs);
   od;
 end;

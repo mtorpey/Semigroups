@@ -22,7 +22,7 @@ def reject_outliers(data, m=2):
 
 def make_plot(filename):
     f = file(filename, 'r');
-    data = [np.array(eval(line.strip())) for line in f.readlines()[1:]] # ignore header
+    data = np.array([np.array(eval(line.strip())) for line in f.readlines()[1:]]) # ignore header
     # data[i][0] = Size of S
     # data[i][1] = Number of generating pairs
     # data[i][2] = Number of congruence classes
@@ -35,17 +35,27 @@ def make_plot(filename):
     f.close()
 
 #   X = np.arange((100 - (len(data[0]) - 1) * 2) / 100., 1.02, 0.02)
-    X = np.arange(0, 8, 1)
+#   X = np.arange(0, len(data), 1)
+    X = data[:,0]
+    X_string = 'Size of S'
     print X
-    print data[0]
-    plt.plot(X, data[0], 'gx', label=u'hello')
-    plt.plot(X, data[0], 'rx', label=u'world')
-    plt.plot((0, 1), (1, 1), 'k-')
-    plt.legend(loc='upper right')
+    print data[:,2]
+#   plt.xscale('log')
+    plt.yscale('log')
+#   plt.plot(X, data[:,0], 'rx', label=u'Size of S')
+#   plt.plot(X, data[:,2], 'rx', label=u'Number of classes')
+    plt.plot(X, data[:,3], 'go', label=u'tc')
+    plt.plot(X, data[:,4], 'mo', label=u'tc_prefill')
+    plt.plot(X, data[:,5], 'yo', label=u'kbfp')
+    plt.plot(X, data[:,6], 'co', label=u'p')
+    plt.plot(X, data[:,7], 'ro', label=u'default')
+#   plt.plot((0, 30), (0, 1000), 'k-')
+#   plt.legend(loc='upper left')
+    plt.legend(loc='best')
     x1,x2,y1,y2 = plt.axis()
-    plt.axis((x1,x2,0,1.6))
-    plt.xlabel(u'Proportion of elements of \u27E8A\u27E9 initially enumerated.')
-    plt.ylabel(u'Ratio of runtime to runtime of FroidurePin(\u27E8A, X\u27E9).')
+#   plt.axis((x1,x2,y1,y2))
+    plt.xlabel(X_string)
+    plt.ylabel(u'Time taken (ms)')
 
     plt.savefig(filename + '.pdf', format='pdf')
     plt.close()
