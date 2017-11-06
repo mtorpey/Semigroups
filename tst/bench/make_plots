@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # pylint: skip-file
 
+import os
 import matplotlib.pyplot as plt
 import time
 import sys
@@ -76,8 +77,8 @@ def make_plot(filename):
     print '\tmean = ', np.mean(data[4]), '\tstandard dev = ', np.std(data[4])
 
 #make_plot('out/' + time.strftime('%Y-%m-%d') + '-boolmat-add_generators')
-make_plot('output.csv')
-
+dir_path = os.path.dirname(os.path.realpath(__file__))
+make_plot(dir_path + '/output.csv')
 
 # Examples where multithreading does not make sense
 
