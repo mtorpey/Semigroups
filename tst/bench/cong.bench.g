@@ -2,19 +2,19 @@
 # Read("tst/bench/cong.bench.g"); do_benchmarks(30);
 # less output.csv
 
-filename := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/output.csv");
-max_size := 1000;
+output_file := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/output.csv");
+input_file := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/random_tests.g");
+max_size := 10000;
 nrpairs := 1;
 nrtestpairs := 3;
 method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
 
-random_benchmark := function(filename, max_size, nrpairs)
-  local S, pairs, test_pairs, i, max_name_len, results, times, method, cong, 
-        start_time, fin_time, time_taken, out_list, out_str;
+random_benchmark := function(input_file, output_file, max_size, nrpairs)
+  local S, pairs, test_pairs, i, input, max_name_len, results, times, method, 
+        cong, start_time, fin_time, time_taken, out_list, out_str;
   repeat
     S := RandomSemigroup(IsTransformationSemigroup, 2, 6);
   until Size(S) < max_size;
-  Print(RelationsOfFpSemigroup(AsSemigroup(IsFpSemigroup, S)), "\n");
   Elements(S);
   Print("\n");
   Print("Size of S: ", Size(S), "\n");
@@ -25,12 +25,17 @@ random_benchmark := function(filename, max_size, nrpairs)
   for i in [1 .. nrtestpairs] do
     test_pairs[i] := [Random(S), Random(S)];
   od;
+  
+  # Write these things to the input file for reading later
+  input := [S, pairs, test_pairs];
+  input := Concatenation(StripLineBreakCharacters(PrintString(input)), "\n");
+  FileString(input_file, input, true);
 
   max_name_len := Maximum(List(method_names, Length));
   results := [];
   times := EmptyPlist(Length(method_names));
   for method in [1 .. 5] do
-    cong := SemigroupCongruence(S, pairs);
+    cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
     CONG_PAIRS_FORCE(cong, method);
     Print(method_names[method], " ...");
     for i in [1 .. max_name_len - Length(method_names[method])] do
@@ -60,14 +65,14 @@ random_benchmark := function(filename, max_size, nrpairs)
   out_str := Concatenation(List(out_list, n -> Concatenation(String(n), ",")));
   Remove(out_str);
   Append(out_str, "\n");
-  FileString(filename, out_str, true);
+  FileString(output_file, out_str, true);
 end;
 
-random_benchmark_repeat := function(nr_iterations, filename, max_size, nrpairs)
+random_benchmark_repeat := function(nr_iterations, input_file, output_file, max_size, nrpairs)
   local i;
   for i in [1 .. nr_iterations] do
     Print("\nExample ", i, " of ", nr_iterations, ":\n");
-    random_benchmark(filename, max_size, nrpairs);
+    random_benchmark(input_file, output_file, max_size, nrpairs);
   od;
 end;
 
@@ -77,6 +82,7 @@ do_benchmarks := function(nr_iterations)
   Append(out_str, Concatenation(List(method_names, name -> Concatenation(name, ","))));
   Remove(out_str);
   Append(out_str, "\n");
-  FileString(filename, out_str);
-  random_benchmark_repeat(nr_iterations, filename, max_size, nrpairs);
+  FileString(output_file, out_str);
+  FileString(input_file, "S, pairs, testpairs\n");
+  random_benchmark_repeat(nr_iterations, input_file, output_file, max_size, nrpairs);
 end;
