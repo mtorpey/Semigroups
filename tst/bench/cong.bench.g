@@ -36,7 +36,7 @@ write_tests := function(nr_iterations)
   od;
 end;
 
-random_benchmark := function(S, pairs, test_pairs, output_file)
+run_test := function(S, pairs, test_pairs, output_file)
   local max_name_len, results, times, method, cong, i, start_time, fin_time, 
         time_taken, out_list, out_str;
   Elements(S);
@@ -79,14 +79,6 @@ random_benchmark := function(S, pairs, test_pairs, output_file)
   FileString(output_file, out_str, true);
 end;
 
-random_benchmark_repeat := function(nr_iterations, input_file, output_file, max_size, nrpairs)
-  local i;
-  for i in [1 .. nr_iterations] do
-    Print("\nExample ", i, " of ", nr_iterations, ":\n");
-    random_benchmark(input_file, output_file, max_size, nrpairs);
-  od;
-end;
-
 do_benchmarks := function()
   local out_str, in_str, tests, test;
   # Header
@@ -102,7 +94,10 @@ do_benchmarks := function()
   tests := List(in_str, EvalString);
   
   # Execute tests
+  i := 0;
   for test in tests do
-    random_benchmark(test[1], test[2], test[3], output_file);
+    i := i + 1;
+    Print("Test #", i, ":\n");
+    run_test(test[1], test[2], test[3], output_file);
   od;
 end;
