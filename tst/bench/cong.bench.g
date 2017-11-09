@@ -3,24 +3,20 @@
 # less output.csv
 
 output_file := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/output.csv");
-input_file := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/random_tests.g");
+input_file := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/random_tests.txt");
 max_size := 10000;
 nrpairs := 1;
 nrtestpairs := 3;
 method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
 
-random_benchmark := function(input_file, output_file, max_size, nrpairs)
-  local S, pairs, test_pairs, i, input, max_name_len, results, times, method, 
-        cong, start_time, fin_time, time_taken, out_list, out_str;
+write_test := function(file, max_size, nrpairs)
+  local S, pairs, test_pairs, i, input;
+  # Write a test case to the end of "file"
   repeat
     S := RandomSemigroup(IsTransformationSemigroup, 2, 6);
   until Size(S) < max_size;
-  Elements(S);
-  Print("\n");
-  Print("Size of S: ", Size(S), "\n");
 
   pairs := List([1 .. nrpairs], i -> [Random(S), Random(S)]);
-  Print("Number of pairs: ", Size(pairs), "\n");
   test_pairs := EmptyPlist(nrtestpairs);
   for i in [1 .. nrtestpairs] do
     test_pairs[i] := [Random(S), Random(S)];
@@ -29,8 +25,23 @@ random_benchmark := function(input_file, output_file, max_size, nrpairs)
   # Write these things to the input file for reading later
   input := [S, pairs, test_pairs];
   input := Concatenation(StripLineBreakCharacters(PrintString(input)), "\n");
-  FileString(input_file, input, true);
+  FileString(file, input, true);
+end;
 
+write_tests := function(nr_iterations)
+  local i;
+  FileString(input_file, "S, pairs, testpairs\n");
+  for i in [1 .. nr_iterations] do
+    write_test(input_file, max_size, nrpairs);
+  od;
+end;
+
+random_benchmark := function(S, pairs, test_pairs, output_file)
+  local max_name_len, results, times, method, cong, i, start_time, fin_time, 
+        time_taken, out_list, out_str;
+  Elements(S);
+  Print("\n");
+  Print("Size of S: ", Size(S), "\n");
   max_name_len := Maximum(List(method_names, Length));
   results := [];
   times := EmptyPlist(Length(method_names));
@@ -76,13 +87,22 @@ random_benchmark_repeat := function(nr_iterations, input_file, output_file, max_
   od;
 end;
 
-do_benchmarks := function(nr_iterations)
-  local out_str;
+do_benchmarks := function()
+  local out_str, in_str, tests, test;
+  # Header
   out_str := "Size(S),nrpairs,nrclasses,";
   Append(out_str, Concatenation(List(method_names, name -> Concatenation(name, ","))));
   Remove(out_str);
   Append(out_str, "\n");
   FileString(output_file, out_str);
-  FileString(input_file, "S, pairs, testpairs\n");
-  random_benchmark_repeat(nr_iterations, input_file, output_file, max_size, nrpairs);
+  
+  # Get tests from input file
+  in_str := SplitString(StringFile(input_file), '\n');;
+  Remove(in_str, 1);;
+  tests := List(in_str, EvalString);
+  
+  # Execute tests
+  for test in tests do
+    random_benchmark(test[1], test[2], test[3], output_file);
+  od;
 end;
