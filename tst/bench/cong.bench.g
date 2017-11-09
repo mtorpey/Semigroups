@@ -80,7 +80,7 @@ run_test := function(S, pairs, test_pairs, output_file)
 end;
 
 do_benchmarks := function()
-  local out_str, in_str, tests, test;
+  local out_str, in_str, tests, i, test;
   # Header
   out_str := "Size(S),nrpairs,nrclasses,";
   Append(out_str, Concatenation(List(method_names, name -> Concatenation(name, ","))));
