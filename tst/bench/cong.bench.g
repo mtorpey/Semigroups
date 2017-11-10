@@ -2,8 +2,8 @@
 # Read("tst/bench/cong.bench.g"); do_benchmarks(30);
 # less output.csv
 
-output_file := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/output.csv");
-input_file := Concatenation(SEMIGROUPS.PackageDir, "/tst/bench/random_tests.txt");
+output_file := Concatenation(GAP_ROOT_PATHS[2], "pkg/semigroups/tst/bench/output.csv");
+input_file := Concatenation(GAP_ROOT_PATHS[2], "pkg/semigroups/tst/bench/random_tests.txt");
 max_size := 10000;
 nrpairs := 1;
 nrtestpairs := 3;
@@ -36,9 +36,24 @@ write_tests := function(nr_iterations)
   od;
 end;
 
-run_test := function(S, pairs, test_pairs, output_file)
-  local max_name_len, results, times, method, cong, i, start_time, fin_time, 
-        time_taken, out_list, out_str;
+time_test := function(test_pairs, cong)
+  local start_time, results, i, fin_time, time_taken;
+  start_time := IO_gettimeofday();
+  results := EmptyPlist(nrtestpairs);
+  for i in [1 .. nrtestpairs] do
+    Add(results, test_pairs[i][1] in
+                 EquivalenceClassOfElement(cong, test_pairs[i][2]));
+  od;
+  fin_time := IO_gettimeofday();
+  time_taken := 10 ^ 6 * (fin_time.tv_sec - start_time.tv_sec) +
+                (fin_time.tv_usec - start_time.tv_usec);
+  time_taken := Float(time_taken) / 1000;
+  return [results, time_taken];
+end;
+
+run_semigroups_tests := function(S, pairs, test_pairs, output_file)
+  local max_name_len, results, times, method, cong, i, t, time, out_list, 
+        out_str;
   Elements(S);
   Print("\n");
   Print("Size of S: ", Size(S), "\n");
@@ -52,17 +67,11 @@ run_test := function(S, pairs, test_pairs, output_file)
     for i in [1 .. max_name_len - Length(method_names[method])] do
       Print(".");
     od;
-    start_time := IO_gettimeofday();
-    results[method] := EmptyPlist(nrtestpairs);
-    for i in [1 .. nrtestpairs] do
-      Add(results[method], test_pairs[i] in cong);
-    od;
-    fin_time := IO_gettimeofday();
-    time_taken := 10 ^ 6 * (fin_time.tv_sec - start_time.tv_sec) +
-                  (fin_time.tv_usec - start_time.tv_usec);
-    time_taken := Float(time_taken) / 1000;
-    Print(" ", time_taken, " ms\n");
-    times[method] := time_taken;
+    t := time_test(test_pairs, cong);
+    results[method] := t[1];
+    time := t[2];
+    Print(" ", time, " ms\n");
+    times[method] := time;
   od;
 
   Print("Results: ");
@@ -98,6 +107,6 @@ do_benchmarks := function()
   for test in tests do
     i := i + 1;
     Print("Test #", i, ":\n");
-    run_test(test[1], test[2], test[3], output_file);
+    run_semigroups_tests(test[1], test[2], test[3], output_file);
   od;
 end;
