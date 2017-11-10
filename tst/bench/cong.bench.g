@@ -13,7 +13,7 @@ write_test := function(file, max_size, nrpairs)
   local S, pairs, test_pairs, i, input;
   # Write a test case to the end of "file"
   repeat
-    S := RandomSemigroup(IsTransformationSemigroup, 2, 6);
+    S := RandomSemigroup(IsTransformationSemigroup, 3, 6);
   until Size(S) < max_size;
 
   pairs := List([1 .. nrpairs], i -> [Random(S), Random(S)]);
