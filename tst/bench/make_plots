@@ -50,6 +50,7 @@ def make_plot(filename):
     plt.plot(X, data[:,5], 'yx', label=u'kbfp')
     plt.plot(X, data[:,6], 'cx', label=u'p')
     plt.plot(X, data[:,7], 'rx', label=u'default')
+    plt.plot(X, data[:,8], 'bx', label=u'GAP')
 #   plt.plot((0, 30), (0, 1000), 'k-')
 #   plt.legend(loc='upper left')
     plt.legend(loc='best')

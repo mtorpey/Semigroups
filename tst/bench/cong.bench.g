@@ -2,13 +2,19 @@
 # Read("tst/bench/cong.bench.g"); do_benchmarks(30);
 # less output.csv
 
-output_file := Concatenation(GAP_ROOT_PATHS[2], "pkg/semigroups/tst/bench/output.csv");
-input_file := Concatenation(GAP_ROOT_PATHS[2], "pkg/semigroups/tst/bench/random_tests.txt");
+if IsBound(SEMIGROUPS) then
+SEMIGROUPS.DefaultOptionsRec.report := false;
+SetInfoLevel(InfoSemigroups, 1);
+fi;
+
+output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
+input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
 max_size := 10000;
 nrpairs := 1;
 nrtestpairs := 3;
 method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
 
+if IsBound(SEMIGROUPS) then
 write_test := function(file, max_size, nrpairs)
   local S, pairs, test_pairs, i, input;
   # Write a test case to the end of "file"
@@ -35,6 +41,7 @@ write_tests := function(nr_iterations)
     write_test(input_file, max_size, nrpairs);
   od;
 end;
+fi;
 
 time_test := function(test_pairs, cong)
   local start_time, results, i, fin_time, time_taken;
@@ -51,6 +58,7 @@ time_test := function(test_pairs, cong)
   return [results, time_taken];
 end;
 
+if IsBound(SEMIGROUPS) then
 run_semigroups_tests := function(S, pairs, test_pairs, output_file)
   local max_name_len, results, times, method, cong, i, t, time, out_list, 
         out_str;
@@ -87,7 +95,46 @@ run_semigroups_tests := function(S, pairs, test_pairs, output_file)
   Append(out_str, "\n");
   FileString(output_file, out_str, true);
 end;
+fi;
 
+gap_tests_output := function(S, pairs, test_pairs)
+  local max_name_len, results, times, method, cong, i, t, time, out_list, 
+        out_str;
+  Elements(S);
+  Print("\n");
+  Print("Size of S: ", Size(S), "\n");
+
+  cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
+  time := time_test(test_pairs, cong)[2];
+  Print("Time taken: ", time, " ms\n");
+
+  out_str := Concatenation(",", String(time), "\n");
+  return out_str;
+end;
+
+do_gap_benchmarks := function()
+  local in_str, tests, out_lines, i;
+  # Get tests from input file
+  in_str := SplitString(StringFile(input_file), '\n');;
+  Remove(in_str, 1);;
+  tests := List(in_str, EvalString);
+  
+  # Read the existing output file
+  out_lines := SplitString(StringFile(output_file), '\n');
+  # Write the header line, overwriting the file
+  FileString(output_file, out_lines[1]);
+  FileString(output_file, "\n", true);
+  
+  Remove(out_lines, 1);
+  for i in [1 .. Length(out_lines)] do
+    # Write the original line
+    FileString(output_file, out_lines[i], true);
+    # Add the extra test
+    FileString(output_file, gap_tests_output(tests[i][1], tests[i][2], tests[i][3]), true);
+  od;
+end;  
+
+if IsBound(SEMIGROUPS) then
 do_benchmarks := function()
   local out_str, in_str, tests, i, test;
   # Header
@@ -110,3 +157,4 @@ do_benchmarks := function()
     run_semigroups_tests(test[1], test[2], test[3], output_file);
   od;
 end;
+fi;
