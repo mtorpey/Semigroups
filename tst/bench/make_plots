@@ -32,6 +32,7 @@ def make_plot(filename):
     # data[i][5] = Time taken (kbfp)
     # data[i][6] = Time taken (p)
     # data[i][7] = Time taken (default)
+    # data[i][8] = Time taken (GAP)
 
     f.close()
 
@@ -39,8 +40,6 @@ def make_plot(filename):
 #   X = np.arange(0, len(data), 1)
     X = data[:,0]
     X_string = 'Size of S'
-    print X
-    print data[:,2]
 #   plt.xscale('log')
     plt.yscale('log')
 #   plt.plot(X, data[:,0], 'rx', label=u'Size of S')
@@ -62,20 +61,14 @@ def make_plot(filename):
     plt.savefig(filename + '.pdf', format='pdf')
     plt.close()
 
+    print 'Number of tests:', len(data)
+    print 'Average time taken:', int(np.round(np.mean(data[:,3:]))), "ms"
+    total_secs = int(np.round(np.sum(data[:,3:])/1000))
+    print 'Total time taken:', total_secs, "sec"
+    print '                 ', total_secs/60, "min"
+    print '                 ', total_secs/60/60, "hr"
+
     print 'See: ' + filename + '.pdf'
-
-    print 'Sample size:\t\t', len(data[2])
-    print 'Number of generators:'
-    print 'max = ', max(data[2]), '\tmin = ', min(data[2]),
-    print '\tmean = ', np.mean(data[2]), '\tstandard dev = ', np.std(data[2])
-
-    print 'Size <A>:'
-    print 'max = ', max(data[3]), '\tmin = ', min(data[3]),
-    print '\tmean = ', np.mean(data[3]), '\tstandard dev = ', np.std(data[3])
-
-    print 'Size <A, X>:'
-    print 'max = ', max(data[4]), '\tmin = ', min(data[4]),
-    print '\tmean = ', np.mean(data[4]), '\tstandard dev = ', np.std(data[4])
 
 #make_plot('out/' + time.strftime('%Y-%m-%d') + '-boolmat-add_generators')
 dir_path = os.path.dirname(os.path.realpath(__file__))
