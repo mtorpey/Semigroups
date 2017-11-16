@@ -9,17 +9,22 @@ fi;
 
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
-max_size := 10000;
+max_size := 1000;
+nrgens := 3;
 nrpairs := 1;
 nrtestpairs := 3;
-method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
+method_names := ["tc", "tc_prefill", "kbfp", "kbp", "default"];
+
+# global variables for EvalString use
+F := fail;
+S := fail;
 
 if IsBound(SEMIGROUPS) then
 write_test := function(file, max_size, nrpairs)
   local S, pairs, test_pairs, i, input;
   # Write a test case to the end of "file"
   repeat
-    S := RandomSemigroup(IsTransformationSemigroup, 3, 6);
+    S := RandomSemigroup(IsFpSemigroup, nrgens, 6);
   until Size(S) < max_size;
 
   pairs := List([1 .. nrpairs], i -> [Random(S), Random(S)]);
@@ -30,13 +35,21 @@ write_test := function(file, max_size, nrpairs)
   
   # Write these things to the input file for reading later
   input := [S, pairs, test_pairs];
-  input := Concatenation(StripLineBreakCharacters(PrintString(input)), "\n");
+  input := [];
+  Add(input, String(Size(FreeGeneratorsOfFpSemigroup(S))));
+  Add(input, ReplacedString(PrintString(RelationsOfFpSemigroup(S)), "s", "F."));
+  Add(input, ReplacedString(PrintString(pairs), "s", "S."));
+  Add(input, ReplacedString(PrintString(test_pairs), "s", "S."));
+  input := List(input, str -> Concatenation(StripLineBreakCharacters(str), ";"));
+  input := Concatenation(input);
+  Remove(input);
+  Append(input, "\n");
   FileString(file, input, true);
 end;
 
 write_tests := function(nr_iterations)
   local i;
-  FileString(input_file, "S, pairs, testpairs\n");
+  FileString(input_file, "nrgens; rels (in F); pairs (in S); testpairs(in S)\n");
   for i in [1 .. nr_iterations] do
     write_test(input_file, max_size, nrpairs);
   od;
@@ -112,12 +125,22 @@ gap_tests_output := function(S, pairs, test_pairs)
   return out_str;
 end;
 
+EvalFpTestLine := function(line)
+  local strings, pairs, test_pairs;
+  strings := SplitString(line, ';');
+  F := FreeSemigroup(EvalString(strings[1]));
+  S := F / EvalString(strings[2]);
+  pairs := EvalString(strings[3]);
+  test_pairs := EvalString(strings[4]);
+  return [S, pairs, test_pairs];
+end;
+
 do_gap_benchmarks := function()
   local in_str, tests, out_lines, i;
   # Get tests from input file
   in_str := SplitString(StringFile(input_file), '\n');;
   Remove(in_str, 1);;
-  tests := List(in_str, EvalString);
+  tests := List(in_str, EvalFpTestLine);
   
   # Read the existing output file
   out_lines := SplitString(StringFile(output_file), '\n');
@@ -147,7 +170,7 @@ do_benchmarks := function()
   # Get tests from input file
   in_str := SplitString(StringFile(input_file), '\n');;
   Remove(in_str, 1);;
-  tests := List(in_str, EvalString);
+  tests := List(in_str, EvalFpTestLine);
   
   # Execute tests
   i := 0;

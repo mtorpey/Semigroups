@@ -42,7 +42,7 @@ def make_plot(filename):
 #    plt.plot(X, data[:,3] / data[:,7], 'gx', label=u'tc')
 #    plt.plot(X, data[:,4] / data[:,7], 'mx', label=u'tc_prefill')
 #    plt.plot(X, data[:,5] / data[:,7], 'yx', label=u'kbfp')
-#    plt.plot(X, data[:,6] / data[:,7], 'cx', label=u'p')
+#    plt.plot(X, data[:,6] / data[:,7], 'cx', label=u'kbp')
 #    plt.plot(X, data[:,7] / data[:,7], 'rx', label=u'default')
 #    plt.plot(X, data[:,8] / data[:,7], 'bx', label=u'GAP')
     plt.plot(gap_to_default, 'b.', alpha=1.0, label=u'GAP')
