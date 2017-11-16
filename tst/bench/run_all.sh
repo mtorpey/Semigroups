@@ -4,5 +4,5 @@ cd $SCRIPTPATH
 
 echo "Read(\"cong.bench.g\"); write_tests(5000); quit;" | gap
 echo "Read(\"cong.bench.g\"); do_benchmarks(); quit;" | gap
-echo "Read(\"cong.bench.g\"); do_gap_benchmarks(); quit;" | gap -r
+echo "LoadPackage(\"io\"); Read(\"cong.bench.g\"); do_gap_benchmarks(); quit;" | gap -A
 ./make_plots

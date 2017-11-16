@@ -35,7 +35,7 @@ def make_plot(filename):
     plt.plot(X, data[:,3], 'gx', label=u'tc')
     plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
     plt.plot(X, data[:,5], 'yx', label=u'kbfp')
-    plt.plot(X, data[:,6], 'cx', label=u'p')
+    plt.plot(X, data[:,6], 'cx', label=u'kbp')
     plt.plot(X, data[:,7], 'rx', label=u'default')
     plt.plot(X, data[:,8], 'bx', label=u'GAP')
     plt.legend(loc='best')
