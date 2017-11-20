@@ -3,7 +3,7 @@
 # less output.csv
 
 if IsBound(SEMIGROUPS) then
-SEMIGROUPS.DefaultOptionsRec.report := true;
+SEMIGROUPS.DefaultOptionsRec.report := false;
 SetInfoLevel(InfoSemigroups, 1);
 fi;
 
@@ -197,7 +197,7 @@ do_benchmarks := function()
   i := 0;
   for test in tests do
     i := i + 1;
-    Print("Test #", i, ":\n");
+    Print("\nTest #", i, ":");
     run_semigroups_tests(test[1], test[2], test[3], output_file);
   od;
 end;
