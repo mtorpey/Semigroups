@@ -31,6 +31,12 @@ def make_plot(filename):
     f.close()
 
     gap_to_default = data[:,8] / data[:,7]
+    bads = []
+    for i in xrange(len(gap_to_default)):
+        if gap_to_default[i] < 1:
+            bads.append(i)
+            print (data[i][7], data[i][8])
+    print bads
     gap_to_default.sort()
 
     X = data[:,0]
@@ -58,6 +64,8 @@ def make_plot(filename):
     print 'Number of tests:', len(data)
     print 'Average time taken:', int(np.round(np.mean(data[:,3:]))), "ms"
     total_secs = int(np.round(np.sum(data[:,3:])/1000))
+    print 'Longest time:', gap_to_default.max()
+    print 'First entries:', gap_to_default[:15]
     print 'Total time taken:', total_secs, "sec"
     print '                 ', total_secs/60, "min"
     print '                 ', total_secs/60/60, "hr"
