@@ -458,7 +458,8 @@ Obj CONG_PAIRS_FORCE(Obj self, gap_cong_t o, Obj method) {
   case 1: cong->force_tc(); break;
   case 2: cong->force_tc_prefill(); break;
   case 3: cong->force_kbfp(); break;
-  case 4: cong->force_kbp(); break;
+  case 4: cong->force_p(); break;
+//case 4: cong->force_kbp(); break;
   default: return False;
   }
   return True;
