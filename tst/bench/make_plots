@@ -43,20 +43,20 @@ def make_plot(filename):
     #print bads
 
     # Plot all the data
-    X = data[:,0]
+    X = (data[:,2] - 1) / data[:,0]
     plt.yscale('log')
 #   plt.plot(X, data[:,0], 'rx', label=u'Size of S')
 #   plt.plot(X, data[:,1], 'rx', label=u'Number of generating pairs')
 #   plt.plot(X, data[:,2], 'rx', label=u'Number of classes')
     plt.plot(X, data[:,3], 'gx', label=u'tc')
     plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
-    plt.plot(X, data[:,5], 'yx', label=u'kbfp')
-    plt.plot(X, data[:,6], 'cx', label=u'p')
-    plt.plot(X, data[:,7], 'rx', label=u'default')
-    plt.plot(X, data[:,8], 'bx', label=u'GAP')
+#   plt.plot(X, data[:,5], 'yx', label=u'kbfp')
+#   plt.plot(X, data[:,6], 'cx', label=u'p')
+#   plt.plot(X, data[:,7], 'rx', label=u'default')
+#   plt.plot(X, data[:,8], 'bx', label=u'GAP')
     plt.legend(loc='best')
     x1,x2,y1,y2 = plt.axis()
-    plt.xlabel('Size of S')
+    plt.xlabel('(Number of classes - 1) / Number of elements')
     plt.ylabel('Time taken (ms)')
 
     # Plot GAP vs default
