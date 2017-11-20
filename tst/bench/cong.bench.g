@@ -9,18 +9,38 @@ fi;
 
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
-max_size := 1000;
 nrgens := 3;
+max_size := 10000;
 nrpairs := 1;
 nrtestpairs := 3;
-method_names := ["tc", "tc_prefill", "kbfp", "kbp", "default"];
 
 # global variables for EvalString use
 F := fail;
 S := fail;
 
+method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
+
 if IsBound(SEMIGROUPS) then
-write_test := function(file, max_size, nrpairs)
+write_trans_test := function(file, max_size, nrpairs)
+  local S, pairs, test_pairs, i, input;
+  # Write a test case to the end of "file"
+  repeat
+    S := RandomSemigroup(IsTransformationSemigroup, nrgens, 6);
+  until Size(S) < max_size;
+
+  pairs := List([1 .. nrpairs], i -> [Random(S), Random(S)]);
+  test_pairs := EmptyPlist(nrtestpairs);
+  for i in [1 .. nrtestpairs] do
+    test_pairs[i] := [Random(S), Random(S)];
+  od;
+  
+  # Write these things to the input file for reading later
+  input := [S, pairs, test_pairs];
+  input := Concatenation(StripLineBreakCharacters(PrintString(input)), "\n");
+  FileString(file, input, true);
+end;
+  
+write_fp_test := function(file, max_size, nrpairs)
   local S, pairs, test_pairs, i, input;
   # Write a test case to the end of "file"
   repeat
@@ -34,7 +54,6 @@ write_test := function(file, max_size, nrpairs)
   od;
   
   # Write these things to the input file for reading later
-  input := [S, pairs, test_pairs];
   input := [];
   Add(input, String(Size(FreeGeneratorsOfFpSemigroup(S))));
   Add(input, ReplacedString(PrintString(RelationsOfFpSemigroup(S)), "s", "F."));
@@ -44,14 +63,14 @@ write_test := function(file, max_size, nrpairs)
   input := Concatenation(input);
   Remove(input);
   Append(input, "\n");
-  FileString(file, input, true);
 end;
 
 write_tests := function(nr_iterations)
   local i;
-  FileString(input_file, "nrgens; rels (in F); pairs (in S); testpairs(in S)\n");
+# FileString(input_file, "nrgens;rels (in F);pairs (in S);testpairs(in S)\n");
+  FileString(input_file, "S, pairs, testpairs\n");
   for i in [1 .. nr_iterations] do
-    write_test(input_file, max_size, nrpairs);
+    write_trans_test(input_file, max_size, nrpairs);
   od;
 end;
 fi;
@@ -140,7 +159,8 @@ do_gap_benchmarks := function()
   # Get tests from input file
   in_str := SplitString(StringFile(input_file), '\n');;
   Remove(in_str, 1);;
-  tests := List(in_str, EvalFpTestLine);
+  #tests := List(in_str, EvalFpTestLine);
+  tests := List(in_str, EvalString);
   
   # Read the existing output file
   out_lines := SplitString(StringFile(output_file), '\n');
@@ -170,7 +190,8 @@ do_benchmarks := function()
   # Get tests from input file
   in_str := SplitString(StringFile(input_file), '\n');;
   Remove(in_str, 1);;
-  tests := List(in_str, EvalFpTestLine);
+  #tests := List(in_str, EvalFpTestLine);
+  tests := List(in_str, EvalString);
   
   # Execute tests
   i := 0;
