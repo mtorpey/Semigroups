@@ -10,7 +10,7 @@ fi;
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
 nrgens := 3;
-max_size := 10000;
+max_size := 5000;
 nrpairs := 2;
 nrtestpairs := 3;
 
