@@ -11,7 +11,7 @@ output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigr
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
 nrgens := 3;
 max_size := 5000;
-nrpairs := 2;
+nrpairs := 3;
 nrtestpairs := 3;
 
 # global variables for EvalString use
