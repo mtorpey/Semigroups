@@ -1,19 +1,17 @@
-# Commands to run:
-# Read("tst/bench/cong.bench.g"); do_benchmarks(30);
-# less output.csv
+# Options
+fp_test := false;
+nrpairs := 3;
+nr_iterations := 10;
+max_size := 1000;
 
 if IsBound(SEMIGROUPS) then
 SEMIGROUPS.DefaultOptionsRec.report := false;
 SetInfoLevel(InfoSemigroups, 1);
 fi;
 
-fp_test := false;
-
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
 nrgens := 3;
-max_size := 5000;
-nrpairs := 3;
 nrtestpairs := 3;
 
 # global variables for EvalString use
@@ -71,7 +69,7 @@ write_fp_test := function(file, max_size, nrpairs)
   FileString(file, input, true);
 end;
 
-write_tests := function(nr_iterations)
+write_tests := function()
   local i;
   if fp_test then
     FileString(input_file, "nrgens;rels (in F);pairs (in S);testpairs(in S)\n");
