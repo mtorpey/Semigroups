@@ -22,6 +22,7 @@ def reject_outliers(data, m=2):
 
 
 def make_plot(filename):
+    format = 'pdf'
     f = file(filename, 'r')
     lines = f.readlines()
     header = lines[0]
@@ -30,9 +31,63 @@ def make_plot(filename):
                      for line in lines[1:]]) # ignore header
     f.close()
 
-    # Compare GAP to default
+    title = ('Transformation semigroups, with '
+             + str(int(data[1][1]))
+             + ' generating pairs')
+    outfile = ('/'.join(filename.split('/')[0:-1])
+               + '/trans-'
+               + str(int(data[1][1]))
+               + 'p-')
+
+    #
+    # PLOT 1: Big comparison (by Size of S)
+    #
+    X = data[:,0]
+    plt.yscale('log')
+#   plt.plot(X, data[:,0], 'rx', label=u'Size of S')
+#   plt.plot(X, data[:,1], 'rx', label=u'Number of generating pairs')
+#   plt.plot(X, data[:,2], 'rx', label=u'Number of classes')
+    plt.plot(X, data[:,3], 'gx', label=u'tc')
+    plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
+    plt.plot(X, data[:,5], 'yx', label=u'kbfp')
+    plt.plot(X, data[:,6], 'cx', label=u'p')
+    plt.plot(X, data[:,7], 'rx', label=u'default')
+    plt.plot(X, data[:,8], 'bx', label=u'GAP')
+    plt.legend(loc='best')
+    plt.xlabel('Size of S')
+    plt.ylabel('Time taken (ms)')
+    plt.title(title)
+    plt.savefig(outfile + 'times' + '.' + format, format=format)
+    plt.close()
+
+    #
+    # PLOT 2: tc vs tc_prefill (nrclasses scale)
+    #
+    X = (data[:,2] - 1) / (data[:,0] - 1)
+    plt.yscale('log')
+    plt.plot(X, data[:,3] / data[:,4], 'g.', label=u'tc')
+    plt.hlines(1, -0.05, 1)
+    plt.legend(loc='best')
+    plt.xlabel('(Number of classes - 1) / (Number of elements - 1)')
+    plt.ylabel('Time taken compared to tc_prefill')
+    plt.title(title)
+    plt.savefig(outfile + 'tccomp' + '.' + format, format=format)
+    plt.close()
+
+    #
+    # PLOT 3: GAP vs default (sorted)
+    #
     gap_to_default = data[:,8] / data[:,7]
     gap_to_default.sort()
+    plt.yscale('log')
+    plt.plot(gap_to_default, 'b.', alpha=1.0, label=u'GAP')
+    plt.hlines(1, 0, len(gap_to_default))
+    plt.legend(loc='best')
+    plt.xlabel('Test number')
+    plt.ylabel('Time taken compared to default')
+    plt.title(title)
+    plt.savefig(outfile + 'gap' + '.' + format, format=format)
+    plt.close()
 
     # Find cases where GAP is better
     bads = []
@@ -42,38 +97,15 @@ def make_plot(filename):
             print (data[i][7], data[i][8])
     #print bads
 
-    # Plot all the data
-    X = (data[:,2] - 1) / data[:,0]
-    plt.yscale('log')
-#   plt.plot(X, data[:,0], 'rx', label=u'Size of S')
-#   plt.plot(X, data[:,1], 'rx', label=u'Number of generating pairs')
-#   plt.plot(X, data[:,2], 'rx', label=u'Number of classes')
-    plt.plot(X, data[:,3] / data[:,4], 'gx', label=u'tc')
-    plt.plot(X, data[:,4] / data[:,4], 'mx', label=u'tc_prefill')
-#   plt.plot(X, data[:,5], 'yx', label=u'kbfp')
-#   plt.plot(X, data[:,6] / data[:,4], 'cx', label=u'p')
-#   plt.plot(X, data[:,7], 'rx', label=u'default')
-#   plt.plot(X, data[:,8], 'bx', label=u'GAP')
-    plt.legend(loc='best')
-    x1,x2,y1,y2 = plt.axis()
-    plt.xlabel('(Number of classes - 1) / Number of elements')
-    plt.ylabel('Time taken vs TC')
-
-    # Plot GAP vs default
-    #plt.plot(gap_to_default, 'b.', alpha=1.0, label=u'GAP')
-    #plt.hlines(1, 0, len(gap_to_default))
-
-    plt.savefig(filename + '.pdf', format='pdf')
-    plt.close()
-
     print 'Number of tests:', len(data)
+    print 'Number of generating pairs:', np.unique(data[:,1])
     print 'Average time taken:', int(np.round(np.mean(data[:,3:]))), "ms"
     total_secs = int(np.round(np.sum(data[:,3:])/1000))
     print 'Longest time taken:', int(data.max()), "ms"
     print 'Total time taken:', total_secs, "sec"
     print '                 ', total_secs/60, "min"
     print '                 ', total_secs/60/60, "hr"
-    print 'See: ' + filename + '.pdf'
+    print 'See: ' + outfile + '*.' + format
 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
