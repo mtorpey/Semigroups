@@ -7,6 +7,8 @@ SEMIGROUPS.DefaultOptionsRec.report := false;
 SetInfoLevel(InfoSemigroups, 1);
 fi;
 
+fp_test := false;
+
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
 nrgens := 3;
@@ -19,6 +21,9 @@ F := fail;
 S := fail;
 
 method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
+if fp_test then
+  method_names[4] := "kbp";
+fi;
 
 if IsBound(SEMIGROUPS) then
 write_trans_test := function(file, max_size, nrpairs)
@@ -33,13 +38,13 @@ write_trans_test := function(file, max_size, nrpairs)
   for i in [1 .. nrtestpairs] do
     test_pairs[i] := [Random(S), Random(S)];
   od;
-  
+
   # Write these things to the input file for reading later
   input := [S, pairs, test_pairs];
   input := Concatenation(StripLineBreakCharacters(PrintString(input)), "\n");
   FileString(file, input, true);
 end;
-  
+
 write_fp_test := function(file, max_size, nrpairs)
   local S, pairs, test_pairs, i, input;
   # Write a test case to the end of "file"
@@ -52,7 +57,7 @@ write_fp_test := function(file, max_size, nrpairs)
   for i in [1 .. nrtestpairs] do
     test_pairs[i] := [Random(S), Random(S)];
   od;
-  
+
   # Write these things to the input file for reading later
   input := [];
   Add(input, String(Size(FreeGeneratorsOfFpSemigroup(S))));
@@ -63,14 +68,22 @@ write_fp_test := function(file, max_size, nrpairs)
   input := Concatenation(input);
   Remove(input);
   Append(input, "\n");
+  FileString(file, input, true);
 end;
 
 write_tests := function(nr_iterations)
   local i;
-# FileString(input_file, "nrgens;rels (in F);pairs (in S);testpairs(in S)\n");
-  FileString(input_file, "S, pairs, testpairs\n");
+  if fp_test then
+    FileString(input_file, "nrgens;rels (in F);pairs (in S);testpairs(in S)\n");
+  else
+    FileString(input_file, "S, pairs, testpairs\n");
+  fi;
   for i in [1 .. nr_iterations] do
-    write_trans_test(input_file, max_size, nrpairs);
+    if fp_test then
+      write_fp_test(input_file, max_size, nrpairs);
+    else
+      write_trans_test(input_file, max_size, nrpairs);
+    fi;
   od;
 end;
 fi;
@@ -92,7 +105,7 @@ end;
 
 if IsBound(SEMIGROUPS) then
 run_semigroups_tests := function(S, pairs, test_pairs, output_file)
-  local max_name_len, results, times, method, cong, i, t, time, out_list, 
+  local max_name_len, results, times, method, cong, i, t, time, out_list,
         out_str;
   Elements(S);
   Print("\n");
@@ -130,7 +143,7 @@ end;
 fi;
 
 gap_tests_output := function(S, pairs, test_pairs)
-  local max_name_len, results, times, method, cong, i, t, time, out_list, 
+  local max_name_len, results, times, method, cong, i, t, time, out_list,
         out_str;
   Elements(S);
   Print("\n");
@@ -159,15 +172,18 @@ do_gap_benchmarks := function()
   # Get tests from input file
   in_str := SplitString(StringFile(input_file), '\n');;
   Remove(in_str, 1);;
-  #tests := List(in_str, EvalFpTestLine);
-  tests := List(in_str, EvalString);
-  
+  if fp_test then
+    tests := List(in_str, EvalFpTestLine);
+  else
+    tests := List(in_str, EvalString);
+  fi;
+
   # Read the existing output file
   out_lines := SplitString(StringFile(output_file), '\n');
   # Write the header line, overwriting the file
   FileString(output_file, out_lines[1]);
-  FileString(output_file, "\n", true);
-  
+  FileString(output_file, ",GAP\n", true);
+
   Remove(out_lines, 1);
   for i in [1 .. Length(out_lines)] do
     # Write the original line
@@ -175,7 +191,7 @@ do_gap_benchmarks := function()
     # Add the extra test
     FileString(output_file, gap_tests_output(tests[i][1], tests[i][2], tests[i][3]), true);
   od;
-end;  
+end;
 
 if IsBound(SEMIGROUPS) then
 do_benchmarks := function()
@@ -186,13 +202,16 @@ do_benchmarks := function()
   Remove(out_str);
   Append(out_str, "\n");
   FileString(output_file, out_str);
-  
+
   # Get tests from input file
   in_str := SplitString(StringFile(input_file), '\n');;
   Remove(in_str, 1);;
-  #tests := List(in_str, EvalFpTestLine);
-  tests := List(in_str, EvalString);
-  
+  if fp_test then
+    tests := List(in_str, EvalFpTestLine);
+  else
+    tests := List(in_str, EvalString);
+  fi;
+
   # Execute tests
   i := 0;
   for test in tests do
