@@ -8,6 +8,7 @@ if IsBound(SEMIGROUPS) then
 SEMIGROUPS.DefaultOptionsRec.report := false;
 SetInfoLevel(InfoSemigroups, 1);
 fi;
+LoadPackage("kbmag");
 
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
@@ -101,6 +102,20 @@ time_test := function(test_pairs, cong)
   return [results, time_taken];
 end;
 
+time_kbmag_test := function(test_pairs, cong)
+  local Q, rws, results, start_time, fin_time, time_taken;
+  Q := Range(cong) / cong;
+  rws := KBMAGRewritingSystem(Q);
+  results := [];
+  start_time := IO_gettimeofday();
+  KnuthBendix(rws);
+  fin_time := IO_gettimeofday();
+  time_taken := 10 ^ 6 * (fin_time.tv_sec - start_time.tv_sec) +
+                (fin_time.tv_usec - start_time.tv_usec);
+  time_taken := Float(time_taken) / 1000;
+  return [results, time_taken];
+end;
+
 if IsBound(SEMIGROUPS) then
 run_semigroups_tests := function(S, pairs, test_pairs, output_file)
   local max_name_len, results, times, method, cong, i, t, time, out_list,
@@ -141,17 +156,23 @@ end;
 fi;
 
 gap_tests_output := function(S, pairs, test_pairs)
-  local max_name_len, results, times, method, cong, i, t, time, out_list,
-        out_str;
+  local cong, gap_time, kbmag_time, out_str;
   Elements(S);
-  Print("\n");
   Print("Size of S: ", Size(S), "\n");
-
   cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
-  time := time_test(test_pairs, cong)[2];
-  Print("Time taken: ", time, " ms\n");
+  
+  gap_time := time_test(test_pairs, cong)[2];
+  Print("Time taken by GAP: ", gap_time, " ms\n");
+  out_str := Concatenation(",", String(gap_time));
+  
+  if fp_test then
+    kbmag_time := time_kbmag_test(test_pairs, cong)[2];
+    Print("Time taken by KBMAG: ", kbmag_time, " ms\n");
+    out_str := Concatenation(out_str, ",", String(kbmag_time));
+  fi;
 
-  out_str := Concatenation(",", String(time), "\n");
+  Print("\n");
+  out_str := Concatenation(out_str, "\n");
   return out_str;
 end;
 
@@ -180,10 +201,15 @@ do_gap_benchmarks := function()
   out_lines := SplitString(StringFile(output_file), '\n');
   # Write the header line, overwriting the file
   FileString(output_file, out_lines[1]);
-  FileString(output_file, ",GAP\n", true);
+  FileString(output_file, ",GAP", true);
+  if fp_test then
+    FileString(output_file, ",KBMAG", true);
+  fi;
+  FileString(output_file, "\n", true);
 
   Remove(out_lines, 1);
   for i in [1 .. Length(out_lines)] do
+    Print("Test ", i, " of ", Length(out_lines), "...\n");
     # Write the original line
     FileString(output_file, out_lines[i], true);
     # Add the extra test

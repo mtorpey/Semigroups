@@ -32,12 +32,12 @@ def make_plot(filename):
         # Transformation semigroups
         fp_test = False
         title = 'Transformation semigroups'
-        outfile = outpath + '/trans-'
+        outfile = outpath + '/bench-trans-'
     else:
         # FP semigroups
         fp_test = True
         title = 'Finitely presented semigroups'
-        outfile = outpath + '/fp-'
+        outfile = outpath + '/bench-fp-'
     data = np.array([np.array(map(float, eval(line.strip())))
                      for line in lines[1:]]) # ignore header
     f.close()
@@ -59,8 +59,10 @@ def make_plot(filename):
     plt.plot(X, data[:,5], 'yx', label=u'kb')
     if not fp_test:
         plt.plot(X, data[:,6], 'cx', label=u'p')
-    plt.plot(X, data[:,7], 'rx', label=u'default')
+    plt.plot(X, data[:,7], 'kx', label=u'default')
     plt.plot(X, data[:,8], 'bx', label=u'GAP')
+    if fp_test:
+        plt.plot(X, data[:,9], 'rx', label=u'KBMAG')
     plt.legend(loc='best')
     plt.xlabel('Size of S')
     plt.ylabel('Time taken (ms)')
