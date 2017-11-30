@@ -28,7 +28,7 @@ def make_plot(filename):
     lines = f.readlines()
     header = lines[0]
     print header
-    if header.find(",p,") != -1:
+    if header.find("(Trans)") != -1:
         # Transformation semigroups
         fp_test = False
         title = 'Transformation semigroups'
@@ -38,6 +38,11 @@ def make_plot(filename):
         fp_test = True
         title = 'Finitely presented semigroups'
         outfile = outpath + '/bench-fp-'
+    if header.find(",,,") != -1:
+        only_tc = True
+        outfile = outfile + 'tc-'
+    else:
+        only_tc = False
     data = np.array([np.array(map(float, eval(line.strip())))
                      for line in lines[1:]]) # ignore header
     f.close()
@@ -57,12 +62,14 @@ def make_plot(filename):
     plt.plot(X, data[:,3], 'gx', label=u'tc')
     if not fp_test:
         plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
-    plt.plot(X, data[:,5], 'yx', label=u'kb')
-    if not fp_test:
+    if not only_tc:
+        plt.plot(X, data[:,5], 'yx', label=u'kb')
+    if (not fp_test) and (not only_tc):
         plt.plot(X, data[:,6], 'cx', label=u'p')
     plt.plot(X, data[:,7], 'kx', label=u'default')
-    plt.plot(X, data[:,8], 'bx', label=u'GAP')
-    if fp_test:
+    if not only_tc:
+        plt.plot(X, data[:,8], 'bx', label=u'GAP')
+    if fp_test and (not only_tc):
         plt.plot(X, data[:,9], 'rx', label=u'kbmag')
     plt.legend(loc='best')
     plt.xlabel('Size of S')
@@ -88,25 +95,26 @@ def make_plot(filename):
     #
     # PLOT 3: GAP vs default (sorted)
     #
-    gap_to_default = data[:,8] / data[:,7]
-    gap_to_default.sort()
-    plt.yscale('log')
-    plt.plot(gap_to_default, 'b.', alpha=1.0, label=u'GAP')
-    plt.hlines(1, 0, len(gap_to_default))
-    plt.legend(loc='best')
-    plt.xlabel('Test number')
-    plt.ylabel('Time taken compared to default')
-    plt.title(title)
-    plt.savefig(outfile + 'gap' + '.' + format, format=format)
-    plt.close()
+    if not only_tc:
+        gap_to_default = data[:,8] / data[:,7]
+        gap_to_default.sort()
+        plt.yscale('log')
+        plt.plot(gap_to_default, 'b.', alpha=1.0, label=u'GAP')
+        plt.hlines(1, 0, len(gap_to_default))
+        plt.legend(loc='best')
+        plt.xlabel('Test number')
+        plt.ylabel('Time taken compared to default')
+        plt.title(title)
+        plt.savefig(outfile + 'gap' + '.' + format, format=format)
+        plt.close()
 
-    # Find cases where GAP is better
-    bads = []
-    for i in xrange(len(gap_to_default)):
-        if gap_to_default[i] < 1:
-            bads.append(i)
-            print (data[i][7], data[i][8])
-    #print bads
+        # Find cases where GAP is better
+        bads = []
+        for i in xrange(len(gap_to_default)):
+            if gap_to_default[i] < 1:
+                bads.append(i)
+                print (data[i][7], data[i][8])
+        #print bads
 
     #
     # PLOT 4: Big comparison BUT (by nrclasses)
@@ -119,12 +127,14 @@ def make_plot(filename):
     plt.plot(X, data[:,3], 'gx', label=u'tc')
     if not fp_test:
         plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
-    plt.plot(X, data[:,5], 'yx', label=u'kb')
-    if not fp_test:
+    if not only_tc:
+        plt.plot(X, data[:,5], 'yx', label=u'kb')
+    if (not fp_test) and (not only_tc):
         plt.plot(X, data[:,6], 'cx', label=u'p')
     plt.plot(X, data[:,7], 'kx', label=u'default')
-    plt.plot(X, data[:,8], 'bx', label=u'GAP')
-    if fp_test:
+    if not only_tc:
+        plt.plot(X, data[:,8], 'bx', label=u'GAP')
+    if fp_test and (not only_tc):
         plt.plot(X, data[:,9], 'rx', label=u'KBMAG')
     plt.legend(loc='best')
     plt.xlabel('(Number of classes - 1) / (Number of elements - 1)')

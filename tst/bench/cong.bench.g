@@ -23,6 +23,10 @@ method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
 if fp_test then
   method_names[4] := "";
 fi;
+if only_tc then
+  method_names[3] := "";
+  method_names[4] := "";
+fi;
 
 if IsBound(SEMIGROUPS) then
 write_trans_test := function(file, max_size, nrpairs)
@@ -162,6 +166,9 @@ fi;
 
 gap_tests_output := function(S, pairs, test_pairs)
   local cong, gap_time, kbmag_time, out_str;
+  if only_tc then
+    Error("We shouldn't run this if only_tc");
+  fi;
   Elements(S);
   Print("Size of S: ", Size(S), "\n");
   cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
@@ -193,6 +200,9 @@ end;
 
 do_gap_benchmarks := function()
   local in_str, tests, out_lines, i;
+  if only_tc then
+    return;
+  fi;
   # Get tests from input file
   in_str := SplitString(StringFile(input_file), '\n');;
   Remove(in_str, 1);;
@@ -226,7 +236,12 @@ if IsBound(SEMIGROUPS) then
 do_benchmarks := function()
   local out_str, in_str, tests, i, test;
   # Header
-  out_str := "Size(S),nrpairs,nrclasses,";
+  if fp_test then
+    out_str := "(FP)";
+  else
+    out_str := "(Trans)";
+  fi;
+  Append(out_str, "Size(S),nrpairs,nrclasses,");
   Append(out_str, Concatenation(List(method_names, name -> Concatenation(name, ","))));
   Remove(out_str);
   Append(out_str, "\n");
