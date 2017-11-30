@@ -1,8 +1,8 @@
 # Options
 fp_test := false;
-nrpairs := 3;
 nr_iterations := 10;
 max_size := 1000;
+nrpairs := function() return Random([1..10]); end;
 
 if IsBound(SEMIGROUPS) then
 SEMIGROUPS.DefaultOptionsRec.report := false;
@@ -84,9 +84,9 @@ write_tests := function()
   fi;
   for i in [1 .. nr_iterations] do
     if fp_test then
-      write_fp_test(input_file, max_size, nrpairs);
+      write_fp_test(input_file, max_size, nrpairs());
     else
-      write_trans_test(input_file, max_size, nrpairs);
+      write_trans_test(input_file, max_size, nrpairs());
     fi;
   od;
 end;
@@ -157,7 +157,7 @@ run_semigroups_tests := function(S, pairs, test_pairs, output_file)
 #   ErrorNoReturn("results differ: ", results);
   fi;
 
-  out_list := Concatenation([Size(S), nrpairs, NrEquivalenceClasses(cong)], times);
+  out_list := Concatenation([Size(S), Length(pairs), NrEquivalenceClasses(cong)], times);
   out_str := Concatenation(List(out_list, n -> Concatenation(String(n), ",")));
   Remove(out_str);
   Append(out_str, "\n");

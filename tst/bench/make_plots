@@ -47,7 +47,8 @@ def make_plot(filename):
                      for line in lines[1:]]) # ignore header
     f.close()
 
-    title = title + ', with ' + str(int(data[1][1])) + ' generating pairs'
+#   title = title + ', with ' + str(int(data[1][1])) + ' generating pairs'
+    title = title + ', with variable generating pairs'
     outfile = outfile + str(int(data[1][1])) + 'p-'
     print title
 
