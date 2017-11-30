@@ -28,7 +28,7 @@ def make_plot(filename):
     lines = f.readlines()
     header = lines[0]
     print header
-    if header.find("kbp") == -1:
+    if header.find(",p,") != -1:
         # Transformation semigroups
         fp_test = False
         title = 'Transformation semigroups'
@@ -55,14 +55,15 @@ def make_plot(filename):
 #   plt.plot(X, data[:,1], 'rx', label=u'Number of generating pairs')
 #   plt.plot(X, data[:,2], 'rx', label=u'Number of classes')
     plt.plot(X, data[:,3], 'gx', label=u'tc')
-    plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
+    if not fp_test:
+        plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
     plt.plot(X, data[:,5], 'yx', label=u'kb')
     if not fp_test:
         plt.plot(X, data[:,6], 'cx', label=u'p')
     plt.plot(X, data[:,7], 'kx', label=u'default')
     plt.plot(X, data[:,8], 'bx', label=u'GAP')
     if fp_test:
-        plt.plot(X, data[:,9], 'rx', label=u'KBMAG')
+        plt.plot(X, data[:,9], 'rx', label=u'kbmag')
     plt.legend(loc='best')
     plt.xlabel('Size of S')
     plt.ylabel('Time taken (ms)')
@@ -116,7 +117,8 @@ def make_plot(filename):
 #   plt.plot(X, data[:,1], 'rx', label=u'Number of generating pairs')
 #   plt.plot(X, data[:,2], 'rx', label=u'Number of classes')
     plt.plot(X, data[:,3], 'gx', label=u'tc')
-    plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
+    if not fp_test:
+        plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
     plt.plot(X, data[:,5], 'yx', label=u'kb')
     if not fp_test:
         plt.plot(X, data[:,6], 'cx', label=u'p')

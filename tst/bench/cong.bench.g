@@ -21,7 +21,7 @@ S := fail;
 
 method_names := ["tc", "tc_prefill", "kbfp", "p", "default"];
 if fp_test then
-  method_names[4] := "kbp";
+  method_names[4] := "";
 fi;
 
 if IsBound(SEMIGROUPS) then
@@ -127,6 +127,11 @@ run_semigroups_tests := function(S, pairs, test_pairs, output_file)
   results := [];
   times := EmptyPlist(Length(method_names));
   for method in [1 .. 5] do
+    if method_names[method] = "" then
+      # Don't run
+      times[method] := 0;
+      continue;
+    fi;
     cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
     CONG_PAIRS_FORCE(cong, method);
     Print(method_names[method], " ...");
