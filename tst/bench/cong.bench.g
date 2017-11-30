@@ -13,6 +13,7 @@ LoadPackage("kbmag");
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
 nrgens := 3;
+degree := 6;
 nrtestpairs := 3;
 
 # global variables for EvalString use
@@ -33,7 +34,7 @@ write_trans_test := function(file, max_size, nrpairs)
   local S, pairs, test_pairs, i, input;
   # Write a test case to the end of "file"
   repeat
-    S := RandomSemigroup(IsTransformationSemigroup, nrgens, 6);
+    S := RandomSemigroup(IsTransformationSemigroup, nrgens, degree);
   until Size(S) < max_size;
 
   pairs := List([1 .. nrpairs], i -> [Random(S), Random(S)]);
@@ -52,7 +53,7 @@ write_fp_test := function(file, max_size, nrpairs)
   local S, pairs, test_pairs, i, input;
   # Write a test case to the end of "file"
   repeat
-    S := RandomSemigroup(IsFpSemigroup, nrgens, 6);
+    S := RandomSemigroup(IsFpSemigroup, nrgens, degree);
   until Size(S) < max_size;
 
   pairs := List([1 .. nrpairs], i -> [Random(S), Random(S)]);
