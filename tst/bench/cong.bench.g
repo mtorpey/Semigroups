@@ -1,6 +1,7 @@
 # Options
 fp_test := false;
 nr_iterations := 10;
+only_tc := false;
 max_size := 1000;
 nrpairs := function() return Random([1..10]); end;
 
