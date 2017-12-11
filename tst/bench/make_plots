@@ -22,6 +22,7 @@ def reject_outliers(data, m=2):
 
 
 def make_plot(filename):
+    right = True
     format = 'pdf'
     outpath = '/'.join(filename.split('/')[0:-1])
     f = file(filename, 'r')
@@ -50,6 +51,8 @@ def make_plot(filename):
 #   title = title + ', with ' + str(int(data[1][1])) + ' generating pairs'
     title = title + ', with variable generating pairs'
     outfile = outfile + 'vp-'
+    if right:
+        outfile = outfile + 'right-'
     print title
 
     #
@@ -63,14 +66,14 @@ def make_plot(filename):
     plt.plot(X, data[:,3], 'gx', label=u'tc')
     if not fp_test:
         plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
-    if not only_tc:
+    if (not only_tc) and (not right):
         plt.plot(X, data[:,5], 'yx', label=u'kb')
     if (not fp_test) and (not only_tc):
         plt.plot(X, data[:,6], 'cx', label=u'p')
     plt.plot(X, data[:,7], 'kx', label=u'default')
     if not only_tc:
         plt.plot(X, data[:,8], 'bx', label=u'GAP')
-    if fp_test and (not only_tc):
+    if fp_test and (not only_tc) and (not right):
         plt.plot(X, data[:,9], 'rx', label=u'kbmag')
     plt.legend(loc='best')
     plt.xlabel('Size of S')
@@ -128,14 +131,14 @@ def make_plot(filename):
     plt.plot(X, data[:,3], 'gx', label=u'tc')
     if not fp_test:
         plt.plot(X, data[:,4], 'mx', label=u'tc_prefill')
-    if not only_tc:
+    if (not only_tc) and (not right):
         plt.plot(X, data[:,5], 'yx', label=u'kb')
     if (not fp_test) and (not only_tc):
         plt.plot(X, data[:,6], 'cx', label=u'p')
     plt.plot(X, data[:,7], 'kx', label=u'default')
     if not only_tc:
         plt.plot(X, data[:,8], 'bx', label=u'GAP')
-    if fp_test and (not only_tc):
+    if fp_test and (not only_tc) and (not right):
         plt.plot(X, data[:,9], 'rx', label=u'KBMAG')
     plt.legend(loc='best')
     plt.xlabel('(Number of classes - 1) / (Number of elements - 1)')

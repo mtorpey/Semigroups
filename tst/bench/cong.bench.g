@@ -2,6 +2,7 @@
 fp_test := false;
 nr_iterations := 10;
 only_tc := false;
+right := false;
 max_size := 1000;
 nrpairs := function() return Random([1..10]); end;
 
@@ -28,6 +29,9 @@ fi;
 if only_tc then
   method_names[3] := "";
   method_names[4] := "";
+fi;
+if right then
+  method_names[3] := "";
 fi;
 
 if IsBound(SEMIGROUPS) then
@@ -138,7 +142,11 @@ run_semigroups_tests := function(S, pairs, test_pairs, output_file)
       times[method] := 0;
       continue;
     fi;
-    cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
+    if right then
+      cong := RightSemigroupCongruenceByGeneratingPairs(S, pairs);
+    else
+      cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
+    fi;
     CONG_PAIRS_FORCE(cong, method);
     Print(method_names[method], " ...");
     for i in [1 .. max_name_len - Length(method_names[method])] do
@@ -173,13 +181,17 @@ gap_tests_output := function(S, pairs, test_pairs)
   fi;
   Elements(S);
   Print("Size of S: ", Size(S), "\n");
-  cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
+  if right then
+    cong := RightSemigroupCongruenceByGeneratingPairs(S, pairs);
+  else
+    cong := SemigroupCongruenceByGeneratingPairs(S, pairs);
+  fi;
   
   gap_time := time_test(test_pairs, cong)[2];
   Print("Time taken by GAP: ", gap_time, " ms\n");
   out_str := Concatenation(",", String(gap_time));
   
-  if fp_test then
+  if fp_test and (not right) then
     kbmag_time := time_kbmag_test(test_pairs, cong)[2];
     Print("Time taken by KBMAG: ", kbmag_time, " ms\n");
     out_str := Concatenation(out_str, ",", String(kbmag_time));
@@ -219,7 +231,7 @@ do_gap_benchmarks := function()
   # Write the header line, overwriting the file
   FileString(output_file, out_lines[1]);
   FileString(output_file, ",GAP", true);
-  if fp_test then
+  if fp_test and (not right) then
     FileString(output_file, ",KBMAG", true);
   fi;
   FileString(output_file, "\n", true);
