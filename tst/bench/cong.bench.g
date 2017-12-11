@@ -1,10 +1,16 @@
 # Options
 fp_test := false;
-nr_iterations := 10;
 only_tc := false;
 right := false;
-max_size := 1000;
-nrpairs := function() return Random([1..10]); end;
+
+nrpairs := function()
+  return 1;
+# return 3;
+# return Random([1..10]);
+end;
+
+max_size := 10000;
+nr_iterations := 250;
 
 if IsBound(SEMIGROUPS) then
 SEMIGROUPS.DefaultOptionsRec.report := false;
