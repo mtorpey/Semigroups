@@ -9,7 +9,10 @@ nrpairs := function()
 # return Random([1..10]);
 end;
 
-max_size := 10000;
+nrgens := 4;
+degree := 7;
+max_size := 25000;
+
 nr_iterations := 250;
 
 if IsBound(SEMIGROUPS) then
@@ -20,8 +23,6 @@ LoadPackage("kbmag");
 
 output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
 input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
-nrgens := 3;
-degree := 6;
 nrtestpairs := 3;
 
 # global variables for EvalString use

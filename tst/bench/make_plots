@@ -22,7 +22,7 @@ def reject_outliers(data, m=2):
 
 
 def make_plot(filename):
-    right = True
+    right = False
     format = 'pdf'
     outpath = '/'.join(filename.split('/')[0:-1])
     f = file(filename, 'r')
@@ -48,10 +48,19 @@ def make_plot(filename):
                      for line in lines[1:]]) # ignore header
     f.close()
 
-#   title = title + ', with ' + str(int(data[1][1])) + ' generating pairs'
-    title = title + ', with variable generating pairs'
-    outfile = outfile + 'vp-'
+    # Number of generating pairs
+    if len(np.unique(data[:,1])) == 1:
+        title = title + ', with ' + str(int(data[1][1])) + ' generating pair'
+        if int(data[1][1]) != 1:
+            title = title + 's'
+        outfile = outfile + str(int(data[1][1])) + '-'
+    else:
+        title = title + ', with a variable number of generating pairs'
+        outfile = outfile + 'vp-'
+
+    # Right congruence
     if right:
+        title = title + ' (right congruence)'
         outfile = outfile + 'right-'
     print title
 
