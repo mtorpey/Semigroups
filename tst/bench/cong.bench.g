@@ -262,6 +262,9 @@ do_benchmarks := function()
   else
     out_str := "(Trans)";
   fi;
+  if right then
+    Append(out_str, "(Right)");
+  fi;
   Append(out_str, "Size(S),nrpairs,nrclasses,");
   Append(out_str, Concatenation(List(method_names, name -> Concatenation(name, ","))));
   Remove(out_str);

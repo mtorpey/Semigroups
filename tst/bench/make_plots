@@ -22,7 +22,6 @@ def reject_outliers(data, m=2):
 
 
 def make_plot(filename):
-    right = False
     format = 'pdf'
     outpath = '/'.join(filename.split('/')[0:-1])
     f = file(filename, 'r')
@@ -59,9 +58,12 @@ def make_plot(filename):
         outfile = outfile + 'vp-'
 
     # Right congruence
-    if right:
+    if header.find("(Right)") != -1:
+        right = True
         title = title + ' (right congruence)'
         outfile = outfile + 'right-'
+    else:
+        right = False
     print title
 
     #
