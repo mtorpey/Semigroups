@@ -162,7 +162,7 @@ def make_plot(filename):
 #   print 'Number of generating pairs:', np.unique(data[:,1])
     print 'Average time taken:', int(np.round(np.mean(data[:,3:]))), "ms"
     total_secs = int(np.round(np.sum(data[:,3:])/1000))
-    print 'Longest time taken:', int(data.max()), "ms"
+    print 'Longest time taken:', int(data[:,3:].max()), "ms"
     print 'Total time taken:', total_secs, "sec"
     print '                 ', total_secs/60, "min"
     print '                 ', total_secs/60/60, "hr"
