@@ -52,7 +52,7 @@ def make_plot(filename):
         title = title + ', with ' + str(int(data[1][1])) + ' generating pair'
         if int(data[1][1]) != 1:
             title = title + 's'
-        outfile = outfile + str(int(data[1][1])) + '-'
+        outfile = outfile + str(int(data[1][1])) + 'p-'
     else:
         title = title + ', with a variable number of generating pairs'
         outfile = outfile + 'vp-'
