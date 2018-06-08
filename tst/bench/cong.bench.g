@@ -1,17 +1,17 @@
 # Options
 fp_test := false;
-only_tc := false;
+only_tc := true;
 right := false;
 
 nrpairs := function()
-#  return 1;
+  return 1;
 #  return 3;
-  return Random([1..10]);
+#  return Random([1..10]);
 end;
 
-nrgens := 4;
-degree := 7;
-max_size := 25000;
+nrgens := 5;
+degree := 8;
+max_size := 100000;
 
 nr_iterations := 250;
 
