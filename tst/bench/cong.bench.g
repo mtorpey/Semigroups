@@ -5,8 +5,8 @@ right := false;
 
 nrpairs := function()
 #  return 1;
-  return 3;
-#  return Random([1..10]);
+#  return 3;
+  return Random([1..10]);
 end;
 
 nrgens := 4;
