@@ -21,8 +21,9 @@ SetInfoLevel(InfoSemigroups, 1);
 fi;
 LoadPackage("kbmag");
 
-output_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/output.csv");
-input_file := Concatenation(GAP_ROOT_PATHS[Length(GAP_ROOT_PATHS)], "pkg/semigroups/tst/bench/random_tests.txt");
+paths := GAPInfo.KernelInfo.GAP_ROOT_PATHS;
+output_file := Concatenation(paths[Length(paths)], "pkg/semigroups/tst/bench/output.csv");
+input_file := Concatenation(paths[Length(paths)], "pkg/semigroups/tst/bench/random_tests.txt");
 nrtestpairs := 3;
 
 # global variables for EvalString use
